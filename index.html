@@ -61,10 +61,16 @@
       }
 
       div.body {
-        width: 100%;
         display: flex;
         flex-direction: column;
-        border-radius: 16px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+      }
+      div.body-wrapper {
+        width: fit-content;
+        display: flex;
+        flex-direction: column;
       }
 
       div.body > section {
@@ -97,12 +103,19 @@
         margin-left: -1.5em;
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 767px) {
         h1 {
           font-size: 3em;
         }
         h2 {
           font-size: 2em;
+        }
+        div.body-wrapper {
+          padding: 2em;
+          width: calc(100% - 4em);
+        }
+        body {
+          padding-top: 2em;
         }
       }
 
@@ -160,7 +173,7 @@
   <body>
     <a class="sl" href="#c">Skip to main</a>
     <main class="container" id="c">
-      <div>
+      <div class="body-wrapper">
         <h1>mahou 魔法</h1>
         <h2>✨ magical</h2>
         <h2>🔍 microservice</h2>
@@ -168,8 +181,9 @@
 
         <div class="body">
           <section>
-            📝 a research project into container orchestration and
-            <p/>microservice infrastructure
+            📝 a research project into container orchestration
+            <p />
+            and microservice infrastructure
           </section>
 
           <section style="margin-top: 0.75em">🕗 coming soon.</section>
@@ -177,7 +191,12 @@
           <section>
             <ul>
               <li><strong>100% free / open-source</strong></li>
-              <li><strong>powered by ⚗️ <a href="https://elixir-lang.org/">elixir</a> and 🧠 <a href="https://singyeong.org">singyeong</a></strong></li>
+              <li>
+                <strong
+                  >powered by ⚗️ <a href="https://elixir-lang.org/">elixir</a> and 🧠
+                  <a href="https://singyeong.org">singyeong</a></strong
+                >
+              </li>
               <li><strong>stateless apps only</strong></li>
               <li>fully self-hosted</li>
               <li>fast deploys, instant scheduling</li>
@@ -202,10 +221,7 @@ use Mahou.Config
               <li>autossl</li>
               <li>automatic doc generation for all services</li>
               <li>no messing with container networking</li>
-              <li>
-                use whatever pieces you want, no full-stack
-                <p/>buy-in needed
-              </li>
+              <li>fully-modular, use only what you want</li>
             </ul>
           </section>
         </div>

@@ -8,8 +8,8 @@ CLI:
 - https://github.com/queer/wand: CLI interface for the entire system.
 
 Powered by:
-- https://github.com/queer/singyeong: Message queuing, pubsub, HTTP proxying, and more. Its own standalone project.
-- https://github.com/queer/crush: Consistent, distributed, replicated, time-traveling JSON store. Its own standalone project.
+- https://github.com/queer/singyeong: Message queuing, pubsub, HTTP proxying, and more. Communication between everything, used by shoujo for routing to services. Its own standalone project.
+- https://github.com/queer/crush: Consistent, distributed, replicated, time-traveling JSON store. pig's state store. Its own standalone project.
 
 Control plane:
 - https://github.com/queer/pig: The Pretty Insane Group scheduler, schedules containers across 악마-managed hosts. "Pretty-Insane" because why would I ever write my own container scheduler lmao

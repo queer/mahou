@@ -116,6 +116,10 @@
       span.token.string {
         color: #f7abc0;
       }
+      span.token.comment {
+        color: #db325c;
+        filter: brightness(60%);
+      }
     </style>
     <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
     <link
@@ -152,8 +156,8 @@
   namespace: "my-company",
   image: "me/app:123",
   limits: %Limits{
-    cpu: 1,
-    ram: 16,
+    cpu: 1, # % of a core
+    ram: 16, # MB
   }
 }
 </code></pre>

@@ -27,6 +27,7 @@
       body {
         padding-top: 8em;
         border-top: 8px solid #db325c;
+        font-family: "Lato", sans-serif;
       }
 
       .sl {
@@ -41,7 +42,16 @@
         top: 0;
       }
 
-      div.container {
+      footer {
+        height: 16em;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
+
+      .container {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -64,6 +74,11 @@
 
       div.body > section:first-child {
         padding-top: 1em;
+      }
+
+      h1,
+      h2 {
+        font-family: "Raleway", sans-serif;
       }
 
       h1 {
@@ -110,7 +125,8 @@
         box-shadow: none !important;
         border-radius: 0 !important;
       }
-      span.token.keyword, span.token.attr-name {
+      span.token.keyword,
+      span.token.attr-name {
         color: #db325c;
       }
       span.token.string {
@@ -127,10 +143,15 @@
       integrity="sha512-Njdz7T/p6Ud1FiTMqH87bzDxaZBsVNebOWmacBjMdgWyeIhUSFU4V52oGwo3sT+ud+lyIE98sS291/zxBfozKw=="
       crossorigin="anonymous"
     />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,900&family=Raleway:wght@900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <a class="sl" href="#c">Skip to main</a>
-    <div class="container" id="c">
+    <main class="container" id="c">
       <div>
         <h1>mahou 魔法</h1>
         <h2>✨ magical</h2>
@@ -138,7 +159,12 @@
         <h2>🛠️ infrastructure</h2>
 
         <div class="body">
-          <section>🕗 coming soon.</section>
+          <section>
+            📝 a research project into container orchestration and
+            <p/>microservice infrastructure
+          </section>
+
+          <section style="margin-top: 0.75em">🕗 coming soon.</section>
 
           <section>
             <ul>
@@ -148,26 +174,34 @@
               <li>fast deploys</li>
               <li>
                 <div>minimal config</div>
-                <pre><code class="language-elixir">use Mahou.Config
+                <pre><code class="language-elixir"># app.exs
+use Mahou.Config
 
 %App{
-  name: "stateless-webapp",
+  name: "stateless-app",
   namespace: "my-company",
-  image: "me/app:123",
+  image: "my-company/stateless-app:label",
   limits: %Limits{
     cpu: 1, # % of a core
     ram: 16, # MB
-  }
+  },
 }
+
+# deploy with: wand create -f app.exs
 </code></pre>
               </li>
               <li>fully self-hosted</li>
               <li>autossl</li>
+              <li>automatic doc generation</li>
             </ul>
           </section>
         </div>
       </div>
-    </div>
+    </main>
+    <footer class="footer">
+      <p>(c) amy 2021 - present</p>
+      <small>feet</small>
+    </footer>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"
       integrity="sha512-xR+IAyN+t9EBIOOJw5m83FTVMDsPd63IhJ3ElP4gmfUFnQlX9+eWGLp3P4t3gIjpo2Z1JzqtW/5cjgn+oru3yQ=="

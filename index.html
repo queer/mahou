@@ -213,6 +213,9 @@ use Mahou.Config
     cpu: 1, # % of a core
     ram: 16, # MB
   },
+  env: %{
+    "MIX_ENV": "prod",
+  },
 }
 
 # deploy with: wand create -f app.exs

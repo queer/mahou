@@ -1,6 +1,6 @@
 # mahou
 
-魔法 - Mahō is a highly-opinionated yet quite magical infrastructure stack for microservice-based applications.
+魔法 - Mahō is a highly-opinionated yet quite magical research project into microservice-based application infrastructure.
 
 https://mahou.io
 

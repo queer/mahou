@@ -118,6 +118,10 @@ you think about what you're doing with it. It should get out of the way and let
 you focus on the important thing: developing your application and hammering out
 code.
 
+Lots of PaaS platforms exist to solve this, but they all have their own faults.
+Too much config effort, not self-hostable, closed source, too expensive, ...
+Take your pick, really.
+
 ## How does it work?
 
 Everything is powered by [singyeong (신경)](https://github.com/queer/singyeong).

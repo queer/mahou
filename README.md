@@ -15,7 +15,7 @@ this for anything but development.
 
 - [What is it?](#what-is-it)
   - [Specifics vs. semantics](#specifics-vs-semantics)
-  - [But this doesn't work for \<application type\>!]()
+  - [But this doesn't work for \<application type\>!](#but-this-doesnt-work-for-application-type)
 - [Opinionated?](#opinionated)
 - [Why?](#why)
 - [How does it work?](#how-does-it-work)

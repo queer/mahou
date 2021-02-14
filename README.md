@@ -11,6 +11,16 @@ https://mahou.io
 enough that more functionality can be built." You should not attempt to use
 this for anything but development.
 
+## Table of contents
+
+- [What is it?](#what-is-it)
+  - [Specifics vs. semantics](#specifics-vs-semantics)
+  - [But this doesn't work for \<application type\>!]()
+- [Opinionated?](#opinionated)
+- [Why?](#why)
+- [How does it work?](#how-does-it-work)
+- [Pieces and parts](#pieces-and-parts)
+
 ## What is it?
 
 More specifically, 魔法 is an exploration into what microservice infrastructure
@@ -55,7 +65,7 @@ application -- things like latencies, CPU / RAM usage, ... -- and automagically
 be able to handle scaling, load-balancing, potentially spawning more nodes for
 the cluster, ...
 
-### But this doesn't work for <application type>!
+### But this doesn't work for \<application type\>!
 
 And that's okay! Not everything can / will fit into this idea, and it's pretty
 unlikely that this takes over the world of app development / deployment. 魔法 is
@@ -66,39 +76,6 @@ into the entire worldview to get benefit out of it! Instead, you can just use
 the bits and pieces you want. You might use just 신경 to move messages around, or
 you might just use it to adopt automagic documentation into your services, or
 you might go all the way! It's completely up to you.
-
-## Why?
-
-My work, both personal and professional, is around developer tooling and app
-infrastructure. A problem I often run into is that dev tooling **sucks**. For
-any number of reasons, really:
-
-- is very in-your-face, forcing you to dump in a lot of brain power, or write
-  massive config files, or...
-- is quite buggy, generates broken / confusing code, abuses a language's type
-  system to create incomprehensible errors, ...
-- requires self-hosting a bunch of extra tooling
-- has a complicated setup / installation process
-- breaks with errors that lead to the tool's source code when searched up, and
-  there's no other results.
-- straight-up doesn't work
-- <insert your reason here>
-
-While I understand the trade-offs made in tooling, it still bothers me, a lot.
-Developer tooling should *just work*, it shouldn't get in your face and make
-you think about what you're doing with it. It should get out of the way and let
-you focus on the important thing: developing your application and hammering out
-code.
-
-## How does it work?
-
-Everything is powered by [singyeong (신경)](https://github.com/queer/singyeong).
-
-At a high level, the major components are the CLI (wand), the scheduler (PIG),
-and the host daemon (agma (악마)). wand is aware of the manifests describing *how* an
-app should be deployed, and it pushes that data to PIG. PIG can then take
-advantage of 신경 queries to schedule containers on hosts very quickly, as the
-scheduler can just ask 신경 for a 악마 node that fits the scheduler requirements.
 
 ## Opinionated?
 
@@ -117,6 +94,39 @@ Apps managed by 魔法 are expected to fit into several patterns:
 
 If your app doesn't agree with these, it's not a good fit for 魔法. Existing
 tooling like [Kubernetes](https://kubernetes.io) is a better choice for you.
+
+## Why?
+
+My work, both personal and professional, is around developer tooling and app
+infrastructure. A problem I often run into is that dev tooling **sucks**. For
+any number of reasons, really:
+
+- is very in-your-face, forcing you to dump in a lot of brain power, or write
+  massive config files, or...
+- is quite buggy, generates broken / confusing code, abuses a language's type
+  system to create incomprehensible errors, ...
+- requires self-hosting a bunch of extra tooling
+- has a complicated setup / installation process
+- breaks with errors that lead to the tool's source code when searched up, and
+  there's no other results.
+- straight-up doesn't work
+- \<insert your reason here\>
+
+While I understand the trade-offs made in tooling, it still bothers me, a lot.
+Developer tooling should *just work*, it shouldn't get in your face and make
+you think about what you're doing with it. It should get out of the way and let
+you focus on the important thing: developing your application and hammering out
+code.
+
+## How does it work?
+
+Everything is powered by [singyeong (신경)](https://github.com/queer/singyeong).
+
+At a high level, the major components are the CLI (wand), the scheduler (PIG),
+and the host daemon (agma (악마)). wand is aware of the manifests describing *how* an
+app should be deployed, and it pushes that data to PIG. PIG can then take
+advantage of 신경 queries to schedule containers on hosts very quickly, as the
+scheduler can just ask 신경 for a 악마 node that fits the scheduler requirements.
 
 ## Pieces and parts
 

@@ -82,7 +82,7 @@ you might go all the way! It's completely up to you.
 Apps managed by 魔法 are expected to fit into several patterns:
 
 - They don't care about their host port bind, as 魔法 assigns one to them.
-- They don't care about DNS, as 魔法 requires all communication to be via <> for
+- They don't care about DNS, as 魔法 requires all communication to be via 신경 for
   load-balancing, failover, autodoc, ...
 - They do not want to talk to other applications directly, don't want to deal
   with service discovery, etc. See previous point.

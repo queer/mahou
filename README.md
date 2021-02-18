@@ -5,6 +5,8 @@ microservice-based application infrastructure.
 
 https://mahou.io
 
+https://discord.gg/RQZ8CV9ceQ
+
 ## Current status
 
 魔法 is in the **prototype** stage. It's the bare minimum of "this stuff works

@@ -13,6 +13,10 @@ https://discord.gg/RQZ8CV9ceQ
 enough that more functionality can be built." You should not attempt to use
 this for anything but development.
 
+## I don't want to read all of this, just show me the code!
+
+[Click here](#pieces-and-parts).
+
 ## Table of contents
 
 - [What is it?](#what-is-it)

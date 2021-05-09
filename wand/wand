@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+mix run -- __.exs "$@"

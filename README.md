@@ -13,10 +13,6 @@ https://discord.gg/RQZ8CV9ceQ
 enough that more functionality can be built." You should not attempt to use
 this for anything but development.
 
-## I don't want to read all of this, just show me the code!
-
-[Click here](#pieces-and-parts).
-
 ## Table of contents
 
 - [What is it?](#what-is-it)
@@ -140,19 +136,13 @@ scheduler can just ask 신경 for a 악마 node that fits the scheduler requirem
 
 ## Pieces and parts
 
-CLI:
-- https://github.com/queer/wand: CLI interface for the entire system.
+- wand: CLI interface for the entire system.
+- PIG: Control plane. The Pretty Insane Group scheduler, schedules containers across 악마-managed hosts. "Pretty-Insane" because why would I ever write my own container scheduler lmao
+- agma: Data plane. Host daemon, stats, container mangler.
+- ~~shoujo: Data plane.~~ TODO: not implemented, will be: ingress + autossl + router
+- ~~sajeon: Data plane.~~ TODO: not implemented, will be: autodoc
+- libmahou: Shared code library that holds everything together.
 
 Powered by:
 - https://github.com/queer/singyeong: Message queuing, pubsub, HTTP proxying, and more. Communication between everything, used by shoujo for routing to services. Its own standalone project.
-
-Control plane:
-- https://github.com/queer/pig: The Pretty Insane Group scheduler, schedules containers across 악마-managed hosts. "Pretty-Insane" because why would I ever write my own container scheduler lmao
-
-Data plane:
-- https://github.com/queer/agma: Host daemon, stats, container mangler
-- ~~https://github.com/queer/shoujo~~ TODO: not implemented, will be: ingress + autossl + router
-- ~~https://github.com/queer/sajeon~~ TODO: not implemented, will be: autodoc
-
-Shared code:
-- https://github.com/queer/libmahou: Shared code library that holds everything together.
+- https://github.com/queer/crush: Time-traveling datastore for deployment etc. status. Its own standalone project.

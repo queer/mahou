@@ -22,6 +22,14 @@ defmodule Agma.Stats do
     # TODO: Track resource limit usage so that it can be queried against in singyeong
     cpus = :erlang.system_info :logical_processors
     cpu_util = :cpu_sup.util()
+    cpu_arch =
+      :system_architecture
+      |> :erlang.system_info
+      |> to_string
+      |> case do
+        "x86_64" <> _ -> "x86_64"
+        arch -> arch
+      end
 
     %{
       total_memory: mem_total,
@@ -37,6 +45,10 @@ defmodule Agma.Stats do
         type: "float",
         value: cpu_util,
       },
+      cpu_arch: %{
+        type: "string",
+        value: cpu_arch,
+      }
       mem_total: %{
         type: "integer",
         value: mem_total,

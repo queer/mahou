@@ -31,6 +31,8 @@ defmodule Agma.Stats do
         arch -> arch
       end
 
+    # TODO: Detect OS family
+
     %{
       total_memory: mem_total,
       free_memory: mem_free,
@@ -48,7 +50,7 @@ defmodule Agma.Stats do
       cpu_arch: %{
         type: "string",
         value: cpu_arch,
-      }
+      },
       mem_total: %{
         type: "integer",
         value: mem_total,

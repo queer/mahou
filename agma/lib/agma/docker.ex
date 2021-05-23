@@ -3,8 +3,11 @@ defmodule Agma.Docker do
   alias Agma.Docker.{Container, Labels}
   alias Agma.Utils
   alias Mahou.Format.App
+  require Logger
 
-  plug Tesla.Middleware.BaseUrl, "http+unix://%2Fvar%2Frun%2Fdocker.sock/v1.41"
+  @base_url "http+unix://%2Fvar%2Frun%2Fdocker.sock/v1.41"
+
+  plug Tesla.Middleware.BaseUrl, @base_url
   plug Tesla.Middleware.Headers, [{"content-type", "application/json"}]
   plug Tesla.Middleware.JSON
 
@@ -32,7 +35,31 @@ defmodule Agma.Docker do
   end
 
   @doc """
-  Create a new
+  Pull the specified image
+  """
+  def pull_image(image) do
+    Logger.info "docker: pulling image: #{image}"
+
+    case HTTPoison.request(:post, @base_url <> "/images/create?fromImage=#{image}", "") do
+      {:ok, _} ->
+        {:ok, :ok}
+
+      {:error, _} = e -> e
+    end
+
+    # case post("/images/create?fromImage=#{image}", nil) do
+    #   {:ok, %Tesla.Env{status: 200, body: body}} ->
+    #     {:ok, body}
+
+    #   {:ok, %Tesla.Env{body: body, status: status}} ->
+    #     {:error, {:unexpected_status, status, body}}
+
+    #   {:error, _} = e -> e
+    # end
+  end
+
+  @doc """
+  Create a new container
   """
   def create(%App{
     id: _,
@@ -42,7 +69,7 @@ defmodule Agma.Docker do
     limits: _,
     env: env,
     inner_port: inner_port,
-  }) do
+  } = app) do
     # TODO: Error-check image names
     if not String.match?(name, ~r/^\/?[a-zA-Z0-9][a-zA-Z0-9_.-]+$/) do
       {:error, :invalid_name}
@@ -94,10 +121,20 @@ defmodule Agma.Docker do
         {:ok, %Tesla.Env{status: 201, body: body}} ->
           {:ok, body}
 
+        {:ok, %Tesla.Env{status: 404, body: %{"message" => "No such image:" <> _}}} ->
+          case pull_image(image) do
+            {:ok, _} -> create app
+            {:error, {:unexpected_status, 404, _}} -> {:error, :image_not_found}
+            {:error, _} = e -> IO.inspect e, limit: :infinity, printable_limit: :infinity, label: "OH FUCK DOCKER WHY"
+          end
+
         {:ok, %Tesla.Env{body: body, status: status}} ->
           {:error, {:unexpected_status, status, body}}
 
-        {:error, _} = e -> e
+        {:error, _} = e ->
+          Logger.warn "ERROR RETURN"
+          IO.inspect e, label: "Unexpected error"
+          e
       end
     end
   end

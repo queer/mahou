@@ -6,9 +6,18 @@ defmodule Pig.Crush do
   plug Tesla.Middleware.BaseUrl, Config.crush_dsn
   plug Tesla.Middleware.JSON
 
+  # TODO: crush should be exposed via sg
+
   def get(key) do
     case get("/#{key}") do
       {:ok, %Tesla.Env{body: body}} -> {:ok, body}
+      {:error, _} = e -> e
+    end
+  end
+
+  def get_decode(key) do
+    case get("/#{key}") do
+      {:ok, %Tesla.Env{body: body}} -> {:ok, :erlang.binary_to_term(body)}
       {:error, _} = e -> e
     end
   end
@@ -26,7 +35,7 @@ defmodule Pig.Crush do
 
   def del(key) do
     case delete("/#{key}") do
-      {:ok, %Tesla.Env{body: "ok"}} -> :ok
+      {:ok, %Tesla.Env{body: %{"status" => "ok"}}} -> :ok
       {:error, _} = e -> e
     end
   end

@@ -59,6 +59,8 @@ defmodule Pig.Consumer do
       |> Query.with_selector(:"$min", "container_count")
       |> Client.proxy("/api/v1/create", :post, msg)
     end
+  rescue
+    e -> IO.inspect e, pretty: true, label: "err"
   end
 
   def process_event(%ChangeContainerStatus{id: id, name: name, namespace: ns, command: cmd} = msg) do

@@ -9,17 +9,17 @@ defmodule Agma.Deployer do
 
     for app <- apps do
       name = Docker.app_name app
-      {:ok, res} = Docker.create app
+      case Docker.create(app) do
+        {:ok, res} ->
+          Logger.info "deploy: app: created #{name}"
+          Logger.debug "deploy: app: #{name}: #{inspect res, pretty: true}"
+          id = res["Id"]
+          {:ok, _} = Docker.start id
+          Logger.info "deploy: app: started #{name}"
 
-      Logger.info "deploy: app: created #{name}"
-      Logger.debug "deploy: app: #{name}: #{inspect res, pretty: true}"
-    end
-
-    for app <- apps do
-      name = Docker.app_name app
-      {:ok, _} = Docker.start name
-
-      Logger.info "deploy: app: started #{name}"
+        {:error, {:unexpected_status, 409, %{"message" => "Conflict. The container name " <> _}}} ->
+          Logger.info "deploy: app: not recreating #{name}"
+      end
     end
   end
 

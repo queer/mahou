@@ -42,7 +42,7 @@ defmodule Sajeon.MixProject do
       {:plug_cowboy, "~> 2.0"},
       # gun 1.3.3 needs a lower version :pensive:
       {:cowlib, "~> 2.9.0", override: true},
-      {:mahou, git: "git@github.com:queer/libmahou.git"},
+      {:mahou, path: "../libmahou"},
     ]
   end
 

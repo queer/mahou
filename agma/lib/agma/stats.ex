@@ -9,7 +9,7 @@ defmodule Agma.Stats do
   end
 
   def init(_) do
-    Logger.info "[STATS] I'm mangling #{length Docker.managed_container_ids()} containers at boot."
+    Logger.info "stats: I'm mangling #{length Docker.managed_container_ids()} containers at boot."
 
     tick()
 
@@ -100,6 +100,11 @@ defmodule Agma.Stats do
     tick()
 
     {:noreply, state}
+  rescue
+    e ->
+      Logger.error "stats: encountered unexpected exception:\n#{Exception.format :error, e, __STACKTRACE__}"
+      tick()
+      {:noreply, state}
   end
 
   defp tick() do

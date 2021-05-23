@@ -90,12 +90,14 @@ defmodule Agma.Docker do
         end
 
       Logger.debug "docker: assigning port #{port}"
+      container_name = app_name name, ns
 
       labels =
         %{
           Labels.deployment() => "mahou:deployment:#{ns}:#{name}",
           Labels.namespace() => ns,
           Labels.managed() => "true",
+          Labels.name_cache() => container_name,
         }
 
       host_config =
@@ -130,8 +132,7 @@ defmodule Agma.Docker do
 
       # opts = if command, do: Map.put(opts, "Cmd", command), else: opts
 
-      name = app_name name, ns
-      case post("/containers/create?name=#{name}", opts) do
+      case post("/containers/create?name=#{container_name}", opts) do
         {:ok, %Tesla.Env{status: 201, body: body}} ->
           {:ok, body}
 
@@ -225,7 +226,7 @@ defmodule Agma.Docker do
   end
 
   def managed_container_names do
-    Enum.flat_map managed_containers(), &(&1.names)
+    Enum.map managed_containers(), &(&1.labels[Labels.name_cache()])
   end
 
   def managed_container_ids do
@@ -233,7 +234,7 @@ defmodule Agma.Docker do
   end
 
   def app_name(%App{name: name, namespace: ns}), do: app_name name, ns
-  def app_name(name, ns), do: "mahou-#{ns || "default"}_#{name}"
+  def app_name(name, ns), do: "mahou..#{ns || "default"}.#{name}..#{Ksuid.generate()}"
 
   def deployments do
     {:ok, containers} = containers()

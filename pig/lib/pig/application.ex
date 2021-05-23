@@ -10,7 +10,7 @@ defmodule Pig.Application do
     children = [
       {Finch, name: Pig.Crush.Finch},
       PigWeb.Telemetry,
-      Pig.Control,
+      Pig.Control, # TODO: Singleton process across the cluster
       {Phoenix.PubSub, name: Pig.PubSub},
       PigWeb.Endpoint,
     ] ++ Mahou.Singyeong.supervisor(dsn, Pig.Consumer)

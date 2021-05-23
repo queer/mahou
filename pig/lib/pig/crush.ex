@@ -9,7 +9,7 @@ defmodule Pig.Crush do
 
   # TODO: crush should be exposed via sg
 
-  def get(key) do
+  def get_key(key) do
     case get("/#{key}") do
       {:ok, %Tesla.Env{body: body}} -> {:ok, body}
       {:error, _} = e -> e

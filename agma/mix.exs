@@ -43,7 +43,8 @@ defmodule Agma.MixProject do
       {:tesla, "~> 1.4"},
       {:castore, "~> 0.1"},
       {:typed_struct, "~> 0.2.1"},
-      {:mahou, git: "git@github.com:queer/libmahou.git"},
+      {:mahou, path: "../libmahou"},
+      {:ksuid, "~> 0.1.2"},
     ]
   end
 

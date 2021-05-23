@@ -26,7 +26,7 @@ defmodule Wand.MixProject do
       {:bakeware, "~> 0.1.4"},
       {:typed_struct, "~> 0.2.1"},
       {:progress_bar, "~> 2.0"},
-      {:mahou, git: "git@github.com:queer/libmahou.git"},
+      {:mahou, path: "../libmahou"},
     ]
   end
 

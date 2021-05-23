@@ -7,6 +7,7 @@ defmodule Pig.Consumer do
     ChangeContainerStatus,
     CreateContainer,
   }
+  alias Pig.Crush
   alias Singyeong.{Client, Query}
   require Logger
 
@@ -43,21 +44,21 @@ defmodule Pig.Consumer do
     Logger.info "deploy: apps: #{Enum.count apps} total"
 
     for %App{limits: %Limits{cpu: _, ram: ram}} = app <- apps do
-      # TODO: Ensure a machine exists that can process the request
-      # TODO: Ensure no container name duping across machines?
-      msg =
-        %CreateContainer{
-          apps: [app],
-        }
-        |> Message.create
-        |> Message.encode(json: true)
+      {:ok, _} = Crush.set Crush.format_deploy(app), app
 
-      "agma"
-      |> Query.new
-      |> Query.with_op(:"$gte", "mem_free", ram * 1024 * 1024)
-      |> Query.with_op(:"$lt", "container_count", 255)
-      |> Query.with_selector(:"$min", "container_count")
-      |> Client.proxy("/api/v1/create", :post, msg)
+      # msg =
+      #   %CreateContainer{
+      #     apps: [app],
+      #   }
+      #   |> Message.create
+      #   |> Message.encode(json: true)
+
+      # "agma"
+      # |> Query.new
+      # |> Query.with_op(:"$gte", "mem_free", ram * 1024 * 1024)
+      # |> Query.with_op(:"$lt", "container_count", 255)
+      # |> Query.with_selector(:"$min", "container_count")
+      # |> Client.proxy("/api/v1/create", :post, msg)
     end
   rescue
     e -> IO.inspect e, pretty: true, label: "err"

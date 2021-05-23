@@ -87,6 +87,10 @@ defmodule Agma.Stats do
         type: "integer",
         value: Enum.count(Docker.managed_container_ids()),
       },
+      deployments: %{
+        type: "map",
+        value: Docker.deployments(),
+      }
     }
     |> Map.merge(%{
       Docs.docs_key() => state.docs,

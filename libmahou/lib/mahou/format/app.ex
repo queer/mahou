@@ -3,12 +3,13 @@ defmodule Mahou.Format.App do
 
   typedstruct do
     field :id, String.t() | nil
-    field :name, String.t()
+    field :name, String.t(), enforce: true
     field :namespace, String.t() | nil
-    field :image, String.t()
-    field :limits, __MODULE__.Limits.t()
+    field :image, String.t(), enforce: true
+    field :limits, __MODULE__.Limits.t(), enforce: true
     field :env, %{required(String.t()) => String.t()}
     field :inner_port, non_neg_integer() | nil
+    field :scale, non_neg_integer(), enforce: true
   end
 
   typedstruct module: Limits do

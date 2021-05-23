@@ -10,6 +10,7 @@ defmodule Pig.Application do
     children = [
       {Finch, name: Pig.Crush.Finch},
       PigWeb.Telemetry,
+      Pig.Control,
       {Phoenix.PubSub, name: Pig.PubSub},
       PigWeb.Endpoint,
     ] ++ Mahou.Singyeong.supervisor(dsn, Pig.Consumer)

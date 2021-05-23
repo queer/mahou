@@ -6,6 +6,8 @@ defmodule Agma.Docker do
   require Logger
 
   @base_url "http+unix://%2Fvar%2Frun%2Fdocker.sock/v1.41"
+  @base_port 6666
+  @port_range 666
 
   plug Tesla.Middleware.BaseUrl, @base_url
   plug Tesla.Middleware.Headers, [{"content-type", "application/json"}]
@@ -74,13 +76,25 @@ defmodule Agma.Docker do
     if not String.match?(name, ~r/^\/?[a-zA-Z0-9][a-zA-Z0-9_.-]+$/) do
       {:error, :invalid_name}
     else
+      ns = ns || "default"
 
-      # TODO: Iterate and find first available
-      port = 6666
+      used_ports =
+        running_containers()
+        |> Enum.flat_map(&(&1.ports))
+        |> Enum.map(&(&1.public_port))
+        |> MapSet.new
+
+      port =
+        Enum.find @base_port..(@base_port + @port_range), fn port ->
+          not MapSet.member?(used_ports, port)
+        end
+
+      Logger.debug "docker: assigning port #{port}"
 
       labels =
         %{
-          Labels.namespace() => ns || "default",
+          Labels.deployment() => "mahou:deployment:#{ns}:#{name}",
+          Labels.namespace() => ns,
           Labels.managed() => "true",
         }
 
@@ -220,4 +234,12 @@ defmodule Agma.Docker do
 
   def app_name(%App{name: name, namespace: ns}), do: app_name name, ns
   def app_name(name, ns), do: "mahou-#{ns || "default"}_#{name}"
+
+  def deployments do
+    {:ok, containers} = containers()
+    containers
+    |> Enum.map(&(&1.labels[Labels.deployment()]))
+    |> Enum.reject(&(&1 == nil))
+    |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+  end
 end

@@ -24,16 +24,13 @@ defmodule Agma.Deployer do
   end
 
   def change_status(%ChangeContainerStatus{
-    id: _id, # TODO: Use someday?
     name: name,
-    namespace: ns,
     command: command,
   }) do
-    app = Docker.app_name name, ns
-    Logger.info "status: app: #{app}: sending :#{command}"
+    Logger.info "status: app: #{name}: sending :#{command}"
     case command do
-      :stop -> {:ok, _} = Docker.stop app
-      :kill -> {:ok, _} = Docker.kill app
+      :stop -> {:ok, _} = Docker.stop name
+      :kill -> {:ok, _} = Docker.kill name
       _ -> raise "wtf is #{command} (HINT: not implemented)"
     end
   end

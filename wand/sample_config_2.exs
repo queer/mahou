@@ -1,12 +1,12 @@
 use Mahou.Config
 
 %App{
-  name: "test-2",
+  name: "test",
   image: "nginxdemos/hello",
   limits: %Limits{
     cpu: 1,
     ram: 16,
   },
   inner_port: 80,
-  scale: 1,
+  scale: 2,
 }

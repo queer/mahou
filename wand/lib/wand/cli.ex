@@ -16,9 +16,6 @@ defmodule Wand.Cli do
       ["create" | args] ->
         Commands.Create.run base_flags, args
 
-      ["stop" | args] ->
-        Commands.Stop.run base_flags, args
-
       [arg | rest] ->
         Logger.info "got arg: #{inspect arg} with data: #{inspect rest}"
 

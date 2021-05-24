@@ -25,32 +25,20 @@ defmodule Pig.Deployer do
     |> Client.proxy("/api/v1/create", :post, msg)
   end
 
-  def undeploy(%App{namespace: ns, name: name}) do
-    undeploy %ChangeContainerStatus{name: name, namespace: ns}
-  end
-
-  def undeploy(%ChangeContainerStatus{id: id, name: name, namespace: ns} = msg) do
-    ns = ns || "default"
-
-    out =
-      msg
+  def undeploy(name) do
+    msg =
+      %ChangeContainerStatus{
+        name: name,
+        command: :stop,
+      }
       |> Message.create
       |> Message.encode(json: true)
 
+    Logger.info "Changing status of #{name}"
+
     "agma"
     |> Query.new
-    |> Query.with_logical_op(
-      :"$or",
-      %{
-        "path" => "/running_container_ids",
-        "op" => "$contains",
-        "to" => %{"value" => id},
-      }, %{
-        "path" => "/running_container_names",
-        "op" => "$contains",
-        "to" => %{"value" => "/mahou-#{ns}_#{name}"},
-      }
-    )
-    |> Client.proxy("/api/v1/status", :post, out)
+    |> Query.with_op(:"$contains", "managed_container_names", "#{name}")
+    |> Client.proxy("/api/v1/status", :post, msg)
   end
 end

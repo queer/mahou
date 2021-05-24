@@ -38,7 +38,6 @@ defmodule Pig.Control do
 
       cond do
         deploy.scale > current_scale ->
-          # TODO: Move key
           case Crush.get_decode(k_scale) do
             {:ok, []} ->
               Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
@@ -57,7 +56,27 @@ defmodule Pig.Control do
           end
 
         deploy.scale < current_scale ->
-          nil
+          case Crush.get_decode(k_scale) do
+            {:ok, []} ->
+              Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
+              Crush.set k_scale, :os.system_time(:millisecond) + @scale_timeout
+              active_deploys[ns_and_name]
+              |> Enum.take(current_scale - deploy.scale)
+              |> Enum.map(fn [mahou, ns_and_name, discrim] ->
+                "#{mahou}..#{ns_and_name}..#{discrim}"
+              end)
+              |> Enum.each(fn full_name ->
+                Deployer.undeploy full_name
+              end)
+
+            {:ok, {last_scale, _}} ->
+              now = :os.system_time(:millisecond)
+              if now > last_scale do
+                Crush.del k_scale
+              end
+
+            _ -> nil
+          end
 
         deploy.scale == current_scale ->
           case Crush.get_key(k_scale) do

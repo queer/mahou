@@ -4,6 +4,7 @@ defmodule AgmaWeb.ContainerController do
   alias Agma.Deployer
   alias Mahou.Message
   alias Mahou.Message.{ChangeContainerStatus, CreateContainer}
+  require Logger
 
   @doc """
   Creates a container

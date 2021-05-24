@@ -55,8 +55,8 @@ defmodule Pig.Consumer do
     e -> IO.inspect e, pretty: true, label: "err"
   end
 
-  def process_event(%ChangeContainerStatus{name: name, namespace: ns, command: cmd} = msg) do
-    Logger.info "status: app: #{ns}:#{name}: sending :#{cmd}"
-    Deployer.undeploy msg
-  end
+  # def process_event(%ChangeContainerStatus{name: name, namespace: ns, command: cmd} = msg) do
+  #   Logger.info "status: app: #{ns}:#{name}: sending :#{cmd}"
+  #   Deployer.undeploy msg
+  # end
 end

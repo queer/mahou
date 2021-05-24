@@ -41,7 +41,6 @@ defmodule Pig.MixProject do
       # gun 1.3.3 needs a lower version :pensive:
       {:cowlib, "~> 2.9.0", override: true},
       {:mahou, path: "../libmahou"},
-      {:singyeong, "~> 0.4.10"},
       {:tesla, "~> 1.4"},
       {:finch, "~> 0.6"},
     ]

@@ -32,6 +32,13 @@ defmodule Agma.Stats do
         arch -> arch
       end
 
+    os_family =
+      case :os.type() do
+        {:unix, :linux} -> "linux"
+        {:unix, :darwin} -> "macos"
+        {:win32, _} -> "windows"
+      end
+
     deployment_ports =
       Docker.managed_containers()
       |> Enum.map(fn container ->
@@ -44,8 +51,6 @@ defmodule Agma.Stats do
       end)
       |> Enum.map(fn {deploy, port} -> {deploy, port.public_port} end)
       |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
-
-    # TODO: Detect OS family
 
     %{
       total_memory: mem_total,
@@ -109,6 +114,10 @@ defmodule Agma.Stats do
         type: "map",
         value: deployment_ports,
       },
+      os_family: %{
+        type: "string",
+        value: os_family,
+      }
     }
     |> Map.merge(%{
       Docs.docs_key() => state.docs,

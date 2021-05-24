@@ -8,5 +8,6 @@ use Mahou.Config
     ram: 16,
   },
   inner_port: 80,
+  outer_port: 5555,
   scale: 2,
 }

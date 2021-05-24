@@ -24,7 +24,13 @@ defmodule Pig.Control do
       "agma"
       |> Query.new
       |> Client.query_metadata
-      |> Enum.flat_map(&(&1["metadata"]["managed_container_names"]))
+      |> case do
+        # nil happens if we have a single agma node that just booted but hasn't
+        # yet found its managed containers.
+        nil -> []
+        elem -> elem
+      end
+      |> Enum.flat_map(&(&1["metadata"]["managed_container_names"] || []))
       |> Enum.map(&String.split(&1, "..", parts: 3))
       |> Enum.group_by(&Enum.at(&1, 1))
       |> Map.new

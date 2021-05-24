@@ -7,5 +7,8 @@ defmodule PigWeb.Router do
 
   scope "/api", PigWeb do
     pipe_through :api
+
+    get "/deploys", ApiController, :deploys
+    get "/ports", ApiController, :external_ports
   end
 end

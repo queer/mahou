@@ -1,6 +1,7 @@
 defmodule Agma.Stats do
   use GenServer
   alias Agma.Docker
+  alias Agma.Docker.Labels
   alias Mahou.Docs
   require Logger
 
@@ -30,6 +31,19 @@ defmodule Agma.Stats do
         "x86_64" <> _ -> "x86_64"
         arch -> arch
       end
+
+    deployment_ports =
+      Docker.managed_containers()
+      |> Enum.map(fn container ->
+        public_port =
+          container.ports
+          |> Enum.filter(&(&1.ip == "0.0.0.0"))
+          |> hd
+
+        {container.labels[Labels.deployment()], public_port}
+      end)
+      |> Enum.map(fn {deploy, port} -> {deploy, port.public_port} end)
+      |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
 
     # TODO: Detect OS family
 
@@ -90,7 +104,11 @@ defmodule Agma.Stats do
       deployments: %{
         type: "map",
         value: Docker.deployments(),
-      }
+      },
+      deployment_ports: %{
+        type: "map",
+        value: deployment_ports,
+      },
     }
     |> Map.merge(%{
       Docs.docs_key() => state.docs,

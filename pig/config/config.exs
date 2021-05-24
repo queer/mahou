@@ -12,5 +12,6 @@ config :logger, :console,
   metadata: [:request_id]
 
 config :phoenix, :json_library, Jason
+config :phoenix, :logger, false
 
 import_config "#{Mix.env()}.exs"

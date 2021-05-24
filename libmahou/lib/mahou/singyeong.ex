@@ -104,11 +104,13 @@ defmodule Mahou.Singyeong do
   end
 
   defp guess_port_from_env do
-    port = System.get_env("PORT")
-
-    case Integer.parse(port) do
-      {value, _} when value > 0 -> value
-      _ -> raise "mahou: singyeong: ip loader: couldn't guess port (tried: phx, env)"
+    case System.get_env("PORT") do
+      nil -> "80"
+      port ->
+        case Integer.parse(port) do
+          {value, _} when value > 0 -> value
+          _ -> raise "mahou: singyeong: ip loader: couldn't guess port (tried: phx, env)"
+        end
     end
   end
 end

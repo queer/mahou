@@ -64,7 +64,6 @@ defmodule Agma.Docker do
   Create a new container
   """
   def create(%App{
-    id: _,
     name: name,
     namespace: ns,
     image: image,

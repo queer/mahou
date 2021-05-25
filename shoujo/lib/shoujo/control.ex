@@ -20,7 +20,7 @@ defmodule Shoujo.Control do
       "pig"
       |> Query.new
       |> Client.proxy("/api/deploys", :get)
-      |> Enum.map(&{"mahou:deployment:#{&1["namespace"] || "default"}:#{&1["name"]}", &1["outer_port"]})
+      |> Enum.map(&{"mahou:deployment:#{&1["namespace"] || "default"}:#{&1["name"]}", {&1["outer_port"], &1["domain"], &1["path"]}})
       |> Map.new
 
     ports =
@@ -31,15 +31,20 @@ defmodule Shoujo.Control do
     port_mappings =
       deploys
       |> Map.keys
-      |> Enum.map(&{deploys[&1], ports[&1]})
-      |> Map.new
+      |> Enum.map(fn key ->
+        {port, domain, path} = deploys[key]
+        {port, {ports[key], domain, path}}
+      end)
+      |> Enum.group_by(fn {port, _} -> port end, fn {_port, rest} -> rest end)
+
+    all_ports = port_mappings |> Enum.map(&elem(&1, 0)) |> MapSet.new
 
     :ports
     |> :ets.tab2list
     |> Enum.map(&elem(&1, 0))
     |> Enum.reject(&is_nil/1)
     |> Enum.each(fn port ->
-      unless Map.has_key?(port_mappings, port) do
+      unless MapSet.member?(all_ports, port) do
         pid =
           port
           |> Proxy.proxy_genserver_name
@@ -59,7 +64,7 @@ defmodule Shoujo.Control do
       {:registered_name, name} = Process.info pid, :registered_name
       "shoujo-proxy-" <> port = Atom.to_string name
       port = String.to_integer port
-      unless Map.has_key?(port_mappings, port) do
+      unless MapSet.member?(all_ports, port) do
         GenServer.call pid, :stop
         DynamicSupervisor.terminate_child Shoujo.ProxySupervisor, pid
         Logger.info "control: proxy: terminated on port #{port}"

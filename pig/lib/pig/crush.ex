@@ -79,6 +79,7 @@ defmodule Pig.Crush do
     |> Enum.map(fn {deploy, _patches} ->
       deploy
     end)
+    |> Enum.reject(&is_integer/1)
   end
 
   def format_deploy(%App{name: name, namespace: ns}) do

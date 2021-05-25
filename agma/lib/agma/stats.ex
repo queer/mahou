@@ -45,10 +45,14 @@ defmodule Agma.Stats do
         public_port =
           container.ports
           |> Enum.filter(&(&1.ip == "0.0.0.0"))
-          |> hd
+          |> case do
+            [] -> nil
+            ports -> hd ports
+          end
 
         {container.labels[Labels.deployment()], public_port}
       end)
+      |> Enum.reject(fn {_, port} -> port == nil end)
       |> Enum.map(fn {deploy, port} -> {deploy, port.public_port} end)
       |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
 

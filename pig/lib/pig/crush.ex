@@ -70,16 +70,20 @@ defmodule Pig.Crush do
   end
 
   def deployments do
-    {:ok, keys} = keys "mahou:deployment:"
-    keys
-    |> Enum.map(&Enum.at(String.split(&1, ":", parts: 2), 1))
-    |> Enum.map(&get_decode(&1))
-    |> Enum.reject(fn x -> elem(x, 0) != :ok end)
-    |> Enum.map(&elem(&1, 1))
-    |> Enum.map(fn {deploy, _patches} ->
-      deploy
-    end)
-    |> Enum.reject(&is_integer/1)
+    case keys("mahou:deployment:") do
+      {:ok, keys} ->
+        keys
+        |> Enum.map(&Enum.at(String.split(&1, ":", parts: 2), 1))
+        |> Enum.map(&get_decode(&1))
+        |> Enum.reject(fn x -> elem(x, 0) != :ok end)
+        |> Enum.map(&elem(&1, 1))
+        |> Enum.map(fn {deploy, _patches} ->
+          deploy
+        end)
+        |> Enum.reject(&is_integer/1)
+
+      {:error, _} -> []
+    end
   end
 
   def format_deploy(%App{name: name, namespace: ns}) do

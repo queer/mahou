@@ -99,6 +99,10 @@ defmodule Pig.Control do
     tick()
     {:noreply, :ok}
   rescue
+    HTTPoison.Error ->
+      tick()
+      {:noreply, :ok}
+
     e ->
       Logger.error "control: encountered unexpected exception:\n#{Exception.format :error, e, __STACKTRACE__}"
       tick()

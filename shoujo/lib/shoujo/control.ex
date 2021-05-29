@@ -20,8 +20,14 @@ defmodule Shoujo.Control do
       "pig"
       |> Query.new
       |> Client.proxy("/api/deploys", :get)
-      |> Enum.map(&{"mahou:deployment:#{&1["namespace"] || "default"}:#{&1["name"]}", {&1["outer_port"], &1["domain"], &1["path"]}})
-      |> Map.new
+      |> case do
+        %{"errors" => _} -> %{}
+
+        data ->
+          data
+          |> Enum.map(&{"mahou:deployment:#{&1["namespace"] || "default"}:#{&1["name"]}", {&1["outer_port"], &1["domain"], &1["path"]}})
+          |> Map.new
+      end
 
     ports =
       "pig"

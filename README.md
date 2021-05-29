@@ -140,7 +140,6 @@ scheduler can just ask 신경 for a 악마 node that fits the scheduler requirem
 - PIG: Control plane. The Pretty Insane Group scheduler, schedules containers across 악마-managed hosts. "Pretty-Insane" because why would I ever write my own container scheduler lmao
 - agma: Data plane. Host daemon, stats, container mangler.
 - shoujo: Data plane. Ingress + router, autossl soon:tm:
-- ~~sajeon: Data plane.~~ TODO: not implemented, will be: autodoc
 - libmahou: Shared code library that holds everything together.
 
 Powered by:

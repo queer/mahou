@@ -2,7 +2,6 @@ defmodule Agma.Stats do
   use GenServer
   alias Agma.Docker
   alias Agma.Docker.Labels
-  alias Mahou.Docs
   require Logger
 
   def start_link(opts) do
@@ -10,13 +9,9 @@ defmodule Agma.Stats do
   end
 
   def init(_) do
-    Logger.info "stats: I'm mangling #{length Docker.managed_container_ids()} containers at boot."
-
+    Logger.info "stats: #{length Docker.managed_container_ids()} managed containers at boot."
     tick()
-
-    docs = Docs.generate
-
-    {:ok, %{docs: docs}}
+    {:ok, %{}}
   end
 
   def handle_info(:tick, state) do
@@ -123,9 +118,6 @@ defmodule Agma.Stats do
         value: os_family,
       }
     }
-    |> Map.merge(%{
-      Docs.docs_key() => state.docs,
-    })
     |> Singyeong.Client.update_metadata
 
     tick()

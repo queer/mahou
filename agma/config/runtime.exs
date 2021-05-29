@@ -1,6 +1,8 @@
-use Mix.Config
+import Config
 
-if Mix.env() == :prod do
-  config :agma,
-    singyeong_dsn: System.get_env("SINGYEONG_DSN")
-end
+config :agma,
+  singyeong_dsn: System.get_env("SINGYEONG_DSN") || "singyeong://agma:password@localhost:4567"
+
+config :agma, AgmaWeb.Endpoint,
+  server: true,
+  code_reloader: false

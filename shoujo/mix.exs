@@ -22,6 +22,7 @@ defmodule Shoujo.MixProject do
     [
       {:mahou, path: "../libmahou"},
       {:ranch, "~> 2.0"},
+      {:ksuid, "~> 0.1.2"},
     ]
   end
 end

@@ -5,7 +5,8 @@ defmodule Shoujo.ProxyProtocol do
   @behaviour :ranch_protocol
 
   def start_link(ref, transport, opts) do
-    GenServer.start_link __MODULE__, [ref, transport, opts]
+    # GenServer.start_link __MODULE__, [ref, transport, opts]
+    :proc_lib.start_link __MODULE__, :init, [[ref, transport, opts]]
   end
 
   def init([ref, transport, [port: port]]) do
@@ -70,7 +71,6 @@ defmodule Shoujo.ProxyProtocol do
             |> case do
               elems when not is_nil(host) or not is_nil(path) ->
                 Enum.filter elems, fn {_targets, inner_host, inner_path} ->
-                  IO.puts "host=#{host} path=#{path} inner_host=#{inner_host} inner_path=#{inner_path}"
                   (host == nil or inner_host == nil or host == inner_host) and (path == nil or inner_path == nil or path == inner_path)
                 end
 
@@ -86,7 +86,13 @@ defmodule Shoujo.ProxyProtocol do
               state
             end
 
-          :gen_tcp.send state.proxy_socket, data
+          output_data =
+            lines
+            |> Enum.concat(["x-mahou-shoujo-request-id: #{Ksuid.generate()}"])
+            |> Enum.join("\r\n")
+            |> Kernel.<>("\r\n\r\n")
+
+          :gen_tcp.send state.proxy_socket, output_data
 
           {:noreply, state}
         else

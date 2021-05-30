@@ -34,7 +34,7 @@ defmodule Pig.Deployer do
       |> Message.create
       |> Message.encode(json: true)
 
-    Logger.info "Changing status of #{name}"
+    Logger.info "deployer: changing status of #{name}"
 
     "agma"
     |> Query.new

@@ -21,6 +21,7 @@ defmodule Shoujo.ProxyProtocol do
         transport: transport,
         proxy_socket: nil,
         first_message: false,
+        request_id: nil,
       }
 
     :gen_server.enter_loop __MODULE__, [], state
@@ -29,18 +30,7 @@ defmodule Shoujo.ProxyProtocol do
   def handle_info({:tcp, socket, data}, state) do
     cond do
       socket == state.socket ->
-        is_probably_http =
-          case data do
-            "GET"     <> _rest -> true
-            "POST"    <> _rest -> true
-            "PUT"     <> _rest -> true
-            "DELETE"  <> _rest -> true
-            "HEAD"    <> _rest -> true
-            "OPTIONS" <> _rest -> true
-            _                 -> false
-          end
-
-        if is_probably_http && byte_size(data) > 4 and binary_part(data, byte_size(data), -4) == "\r\n\r\n" do
+        if is_http_request?(data) do
           lines =
             data
             |> String.trim
@@ -86,15 +76,17 @@ defmodule Shoujo.ProxyProtocol do
               state
             end
 
+          request_id = Ksuid.generate()
+
           output_data =
             lines
-            |> Enum.concat(["x-mahou-shoujo-request-id: #{Ksuid.generate()}"])
+            |> Enum.concat(["x-mahou-shoujo-request-id: #{request_id}"])
             |> Enum.join("\r\n")
             |> Kernel.<>("\r\n\r\n")
 
           :gen_tcp.send state.proxy_socket, output_data
 
-          {:noreply, state}
+          {:noreply, %{state | request_id: request_id}}
         else
           target =
             :ports
@@ -116,8 +108,22 @@ defmodule Shoujo.ProxyProtocol do
         end
 
       socket == state.proxy_socket ->
-        state.transport.send state.socket, data
-        {:noreply, state}
+        # if is_http_response?(data) do
+        #   [headers | [rest | _]] =
+        #     data
+        #     |> String.trim
+        #     |> String.split("\r\n", parts: 2)
+        #     |> IO.inspect
+
+        #   output_data = headers <> "\r\nx-mahou-shoujo-request-id: #{state.request_id}\r\n\r\n" <> rest
+        #   IO.inspect output_data
+        #   state.transport.send state.socket, output_data
+
+        #   {:noreply, state}
+        # else
+          state.transport.send state.socket, data
+          {:noreply, state}
+        # end
     end
   end
 
@@ -144,4 +150,22 @@ defmodule Shoujo.ProxyProtocol do
     {:ok, proxy_socket} = :gen_tcp.connect target_ip, target_port, [:binary, {:active, true}]
     proxy_socket
   end
+
+  defp is_http_request?(data) do
+    method? =
+      case data do
+        "GET"     <> _rest -> true
+        "POST"    <> _rest -> true
+        "PUT"     <> _rest -> true
+        "DELETE"  <> _rest -> true
+        "HEAD"    <> _rest -> true
+        "OPTIONS" <> _rest -> true
+        _                  -> false
+      end
+
+    method? and byte_size(data) > 4 and binary_part(data, byte_size(data), -4) == "\r\n\r\n"
+  end
+
+  defp is_http_response?("HTTP/1.1" <> _), do: true
+  defp is_http_response?(_), do: false
 end

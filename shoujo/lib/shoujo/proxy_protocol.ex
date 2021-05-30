@@ -108,22 +108,20 @@ defmodule Shoujo.ProxyProtocol do
         end
 
       socket == state.proxy_socket ->
-        # if is_http_response?(data) do
-        #   [headers | [rest | _]] =
-        #     data
-        #     |> String.trim
-        #     |> String.split("\r\n", parts: 2)
-        #     |> IO.inspect
+        if is_http_response?(data) do
+          [headers | [rest | _]] =
+            data
+            |> String.trim
+            |> String.split("\r\n", parts: 2)
 
-        #   output_data = headers <> "\r\nx-mahou-shoujo-request-id: #{state.request_id}\r\n\r\n" <> rest
-        #   IO.inspect output_data
-        #   state.transport.send state.socket, output_data
+          output_data = headers <> "\r\nx-mahou-shoujo-request-id: #{state.request_id}\r\n" <> rest
+          state.transport.send state.socket, output_data
 
-        #   {:noreply, state}
-        # else
+          {:noreply, state}
+        else
           state.transport.send state.socket, data
           {:noreply, state}
-        # end
+        end
     end
   end
 

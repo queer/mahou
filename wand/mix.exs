@@ -8,7 +8,8 @@ defmodule Wand.MixProject do
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      releases: release()
+      releases: release(),
+      escript: [main_module: Wand.Application],
     ]
   end
 

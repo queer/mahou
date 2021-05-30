@@ -1,0 +1,44 @@
+name: release
+on:
+  push:
+    tags:
+      - '*'
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 23.1.2
+          elixir-version: 1.11.3
+      - name: Build Elixir Releases
+        run: |
+          cd agma && mix deps.get && env MIX_ENV=prod mix release && cd ..
+          cd pig && mix deps.get && env MIX_ENV=prod mix release && cd ..
+          cd shoujo && mix deps.get && env MIX_ENV=prod mix release && cd ..
+          cd wand && mix deps.get && env MIX_ENV=prod mix escript.build && cd ..
+      - name: Upload agma
+        uses: actions/upload-artifact@v2
+        with:
+          path: agma/_build/prod/rel/agma/bin/agma
+      - name: Upload pig
+        uses: actions/upload-artifact@v2
+        with:
+          path: pig/_build/prod/rel/pig/bin/pig
+      - name: Upload shoujo
+        uses: actions/upload-artifact@v2
+        with:
+          path: shoujo/_build/prod/rel/shoujo/bin/shoujo
+      - name: Upload wand
+        uses: actions/upload-artifact@v2
+        with:
+          path: wand/wand
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

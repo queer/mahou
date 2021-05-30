@@ -5,6 +5,8 @@ defmodule Wand.Application do
   alias Wand.Cli
   require Logger
 
+  def main(_), do: nil
+
   @impl true
   def start(_type, _args) do
     {base_flags, argv} = OptionParser.parse_head! System.argv(), Cli.default_parse_opts()

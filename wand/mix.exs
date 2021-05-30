@@ -24,18 +24,9 @@ defmodule Wand.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bakeware, "~> 0.1.4"},
       {:typed_struct, "~> 0.2.1"},
       {:progress_bar, "~> 2.0"},
       {:mahou, path: "../libmahou"},
-    ]
-  end
-
-  def release do
-    [
-      distrib: [
-        steps: [:assemble, &Bakeware.assemble/1]
-      ]
     ]
   end
 end

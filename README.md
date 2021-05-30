@@ -7,6 +7,10 @@ https://mahou.io
 
 https://discord.gg/RQZ8CV9ceQ
 
+If you like what I make, consider supporting me on Patreon:
+
+[<img src="https://i.imgur.com/YFjoCd1.png" width="162" height="38" />](https://patreon.com/amyware)
+
 ## Current status
 
 魔法 is in the **prototype** stage. It's the bare minimum of "this stuff works

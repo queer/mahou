@@ -36,63 +36,40 @@ defmodule Pig.Control do
       |> Map.new
 
     for deploy <- deploys, is_struct(deploy) do
-      k = Crush.format_deploy deploy
-      k_scale = k <> ":scale-until"
-      ns_and_name = "#{deploy.namespace || "default"}.#{deploy.name}"
-      current_scale = Enum.count(active_deploys[ns_and_name] || [])
+      current_scale = Enum.count(active_deploys[ns_and_name(deploy)] || [])
       # Logger.info "control: checking #{ns_and_name}, scale=#{current_scale}, expected=#{deploy.scale}"
 
-      cond do
-        deploy.scale > current_scale ->
-          case Crush.get_decode(k_scale) do
-            {:ok, []} ->
-              Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
-              Crush.set k_scale, :os.system_time(:millisecond) + @scale_timeout
-              for _ <- 0..(deploy.scale - current_scale - 1) do
-                Deployer.deploy deploy
-              end
+      last_scale_metadata =
+        deploy
+        |> scale_key
+        |> Crush.get_decode
+        |> case do
+          {:ok, []} -> {:ok, false, nil}
+          {:ok, {last_scale, _}} -> {:ok, true, last_scale}
+          _ -> {:error, false, nil}
+        end
 
-            {:ok, {last_scale, _}} ->
-              now = :os.system_time(:millisecond)
-              if now > last_scale do
-                Crush.del k_scale
-              end
-
-            _ -> nil
+      with {:scale, false} <- {:scale, deploy.scale == current_scale},
+           {:metadata, {scale_check_status, false, _last_scale}} <- {:metadata, last_scale_metadata},
+           {:status, :ok} <- {:status, scale_check_status} do
+        Logger.info "control: scaling #{ns_and_name(deploy)}"
+        scale_service active_deploys, deploy, current_scale
+      else
+        {:metadata, {:ok, true, last_scale}} ->
+          # awaiting_scale? == true, cleanup if timeout
+          now = :os.system_time :millisecond
+          if now > last_scale do
+            Logger.info "control: #{ns_and_name(deploy)}: cleanup timeout key"
+            Crush.del scale_key(deploy)
           end
 
-        deploy.scale < current_scale ->
-          case Crush.get_decode(k_scale) do
-            {:ok, []} ->
-              Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
-              Crush.set k_scale, :os.system_time(:millisecond) + @scale_timeout
-              active_deploys[ns_and_name]
-              |> Enum.take(current_scale - deploy.scale)
-              |> Enum.map(fn [mahou, ns_and_name, discrim] ->
-                "#{mahou}..#{ns_and_name}..#{discrim}"
-              end)
-              |> Enum.each(fn full_name ->
-                Deployer.undeploy full_name
-              end)
+        {:scale, true} ->
+          # Fully scaled, cleanup timeout key
+          # Logger.info "control: #{ns_and_name(deploy)} scaled!"
+          Crush.del scale_key(deploy)
 
-            {:ok, {last_scale, _}} ->
-              now = :os.system_time(:millisecond)
-              if now > last_scale do
-                Crush.del k_scale
-              end
-
-            _ -> nil
-          end
-
-        deploy.scale == current_scale ->
-          case Crush.get_key(k_scale) do
-            {:ok, []} -> nil
-            {:ok, [_, _]} ->
-              Logger.info "control: #{ns_and_name} scaled!"
-              Crush.del k_scale
-
-            _ -> nil
-          end
+        {:metadata, {_, _, _}} -> nil
+        {:status, :error} -> nil
       end
     end
 
@@ -107,5 +84,42 @@ defmodule Pig.Control do
       Logger.error "control: encountered unexpected exception:\n#{Exception.format :error, e, __STACKTRACE__}"
       tick()
       {:noreply, :ok}
+  end
+
+  defp scale_service(active_deploys, deploy, current_scale) do
+    ns_and_name = ns_and_name deploy
+
+    cond do
+      deploy.scale > current_scale ->
+        Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
+        Crush.set scale_key(deploy), :os.system_time(:millisecond) + @scale_timeout
+        for _ <- 0..(deploy.scale - current_scale - 1) do
+          Deployer.deploy deploy
+        end
+
+      deploy.scale < current_scale ->
+        Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
+        Crush.set scale_key(deploy), :os.system_time(:millisecond) + @scale_timeout
+        active_deploys[ns_and_name]
+        |> Enum.take(current_scale - deploy.scale)
+        |> Enum.map(fn [mahou, ns_and_name, discrim] ->
+          "#{mahou}..#{ns_and_name}..#{discrim}"
+        end)
+        |> Enum.each(fn full_name ->
+          Deployer.undeploy full_name
+        end)
+    end
+  end
+
+  defp deploy_key(deploy) do
+    Crush.format_deploy deploy
+  end
+
+  defp scale_key(deploy) do
+    deploy_key(deploy) <> ":scale-until"
+  end
+
+  defp ns_and_name(deploy) do
+    "#{deploy.namespace || "default"}.#{deploy.name}"
   end
 end

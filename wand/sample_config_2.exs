@@ -9,5 +9,5 @@ use Mahou.Config
   },
   inner_port: 80,
   outer_port: 5555,
-  scale: 2,
+  scale: 3,
 }

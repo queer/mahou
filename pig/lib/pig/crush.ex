@@ -7,7 +7,7 @@ defmodule Pig.Crush do
   plug Tesla.Middleware.BaseUrl, Config.crush_dsn()
   plug Tesla.Middleware.JSON
 
-  # TODO: crush should be exposed via sg
+  # TODO: crush should probably be exposed via sg?
 
   def get_key(key) do
     case get("/#{key}") do
@@ -23,13 +23,13 @@ defmodule Pig.Crush do
 
         elem =
           elem
-          |> :erlang.list_to_binary
+          |> Base.decode64!
           |> :erlang.binary_to_term
 
         patches =
           Enum.map patches, fn patch ->
             patch
-            |> :erlang.list_to_binary
+            |> Base.decode64!
             |> :erlang.binary_to_term
           end
 

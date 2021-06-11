@@ -112,9 +112,9 @@ defmodule Shoujo.ProxyProtocol do
           [headers | [rest | _]] =
             data
             |> String.trim
-            |> String.split("\r\n", parts: 2)
+            |> String.split("\r\n\r\n", parts: 2)
 
-          output_data = headers <> "\r\nx-mahou-shoujo-request-id: #{state.request_id}\r\n" <> rest
+          output_data = headers <> "\r\nx-mahou-shoujo-request-id: #{state.request_id}\r\n\r\n" <> rest
           state.transport.send state.socket, output_data
 
           {:noreply, state}

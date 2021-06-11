@@ -1,11 +1,8 @@
 defmodule Pig.Consumer do
   use Singyeong.Consumer
   alias Mahou.Message
-  alias Mahou.Message.{
-    ChangeContainerStatus,
-    CreateContainer,
-  }
-  alias Pig.{Crush, Deployer}
+  alias Mahou.Message.CreateContainer
+  alias Pig.Crush
   require Logger
 
   def start_link do

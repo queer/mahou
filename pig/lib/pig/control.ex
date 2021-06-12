@@ -94,6 +94,7 @@ defmodule Pig.Control do
         Logger.warn "control: deploy #{ns_and_name} scale: #{current_scale} != #{deploy.scale}"
         Crush.set scale_key(deploy), :os.system_time(:millisecond) + @scale_timeout
         for _ <- 0..(deploy.scale - current_scale - 1) do
+          # Note: This blocks until the deploy is finished
           Deployer.deploy deploy
         end
 
@@ -109,6 +110,11 @@ defmodule Pig.Control do
           Deployer.undeploy full_name
         end)
     end
+  rescue
+    _ in Jason.DecodeError ->
+      # No remote, immediately attempt scaling again
+      Crush.del scale_key(deploy)
+      nil
   end
 
   defp deploy_key(deploy) do

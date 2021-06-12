@@ -77,10 +77,8 @@ defmodule Pig.Crush do
         |> Enum.map(&get_decode(&1))
         |> Enum.reject(fn x -> elem(x, 0) != :ok end)
         |> Enum.map(&elem(&1, 1))
-        |> Enum.map(fn {deploy, _patches} ->
-          deploy
-        end)
-        |> Enum.reject(&is_integer/1)
+        |> Enum.map(&elem(&1, 0))
+        |> Enum.filter(&is_struct/1)
 
       {:error, _} -> []
     end

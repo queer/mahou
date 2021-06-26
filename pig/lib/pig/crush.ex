@@ -48,7 +48,6 @@ defmodule Pig.Crush do
   end
 
   def set(key, value) when is_binary(value) do
-    IO.puts "sending body: #{byte_size(value)}"
     case put("/#{key}", value) do
       {:ok, %Tesla.Env{body: body}} -> {:ok, body}
       {:error, _} = e -> e

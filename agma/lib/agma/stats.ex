@@ -116,7 +116,11 @@ defmodule Agma.Stats do
       os_family: %{
         type: "string",
         value: os_family,
-      }
+      },
+      containers_with_versions: %{
+        type: "map",
+        value: Docker.containers_with_versions(),
+      },
     }
     |> Singyeong.Client.update_metadata
 

@@ -20,7 +20,7 @@ defmodule Pig.Control do
 
   def handle_info(:tick, _) do
     deploys = Crush.deployments()
-    active_deploys =
+    metadata =
       "agma"
       |> Query.new
       |> Client.query_metadata
@@ -30,15 +30,35 @@ defmodule Pig.Control do
         nil -> []
         elem -> elem
       end
+
+    active_deploys =
+      metadata
       |> Enum.flat_map(&(&1["metadata"]["managed_container_names"] || []))
       |> Enum.map(&String.split(&1, "..", parts: 3))
       |> Enum.group_by(&Enum.at(&1, 1))
       |> Map.new
 
+    deploy_versions =
+      metadata
+      |> Enum.flat_map(&(&1["metadata"]["containers_with_versions"]))
+      |> Map.new
+
     for deploy <- deploys, is_struct(deploy) do
       current_scale = Enum.count(active_deploys[ns_and_name(deploy)] || [])
-      # Logger.info "control: checking #{ns_and_name}, scale=#{current_scale}, expected=#{deploy.scale}"
+      # Logger.info "control: checking #{ns_and_name(deploy)}, scale=#{current_scale}, expected=#{deploy.scale}"
 
+      # Try to deploy new images as needed
+      target = Enum.find deploy_versions, fn {k, v} -> String.contains?(k, ns_and_name(deploy)) and v != deploy.image end
+      case target do
+        {name, image} ->
+          # TODO: Debounce
+          Logger.info "control: roll: undeploy #{name} (#{image} != #{deploy.image})"
+          Deployer.undeploy name
+
+        nil -> nil
+      end
+
+      # Actually scale
       last_scale_metadata =
         deploy
         |> scale_key

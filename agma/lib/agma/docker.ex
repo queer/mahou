@@ -232,6 +232,10 @@ defmodule Agma.Docker do
     Enum.map managed_containers(), &(&1.id)
   end
 
+  def containers_with_versions do
+    managed_containers() |> Enum.map(&{&1.labels[Labels.name_cache()], &1.image}) |> Map.new
+  end
+
   def app_name(%App{name: name, namespace: ns}), do: app_name name, ns
   def app_name(name, ns), do: "mahou..#{ns || "default"}.#{name}..#{Ksuid.generate()}"
 

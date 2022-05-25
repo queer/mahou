@@ -17,6 +17,11 @@ If you like what I make, consider supporting me on Patreon:
 enough that more functionality can be built." You should not attempt to use
 this for anything but development.
 
+### UPDATE 2022-05-26
+
+I'm still here! I still want to work on this, but other projects -- such as [squish](https://queer.gg/squish) --
+have taken priority so that they can be better building blocks for mahou than what I have currently.
+
 ## Table of contents
 
 - [What is it?](#what-is-it)
